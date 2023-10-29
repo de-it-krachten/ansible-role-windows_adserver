@@ -1,0 +1,128 @@
+---
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - master
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * 1"
+
+defaults:
+  run:
+    working-directory: "de-it-krachten/ansible-role-windows_adserver"
+
+
+jobs:
+
+  lint:
+    name: "${{ matrix.name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "ansible_2.9"
+            # ansible: "ansible==2.9.27"
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: "ansible_2.11"
+            # ansible: "ansible>4,<5"
+            ansible: "ansible-core>2.11,<2.12"
+            ansible_lint: "ansible-lint>5,<6"
+          - name: "ansible_2.12"
+            # ansible: "ansible>5,<6"
+            ansible: "ansible-core>2.12,<2.13"
+            ansible_lint: "ansible-lint>6,<7"
+          - name: "ansible_2.13"
+            # ansible: "ansible>6,<7"
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+          - name: "ansible_2.14"
+            # ansible: "ansible>6,<7"
+            ansible: "ansible-core>2.14,<2.15"
+            ansible_lint: "ansible-lint"
+          - name: "ansible_2.15"
+            # ansible: "ansible>7,<8"
+            ansible: "ansible-core>2.15,<2.16"
+            ansible_lint: "ansible-lint"
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+        with:
+          path: "${{ github.repository }}"
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+
+      - name: Show runner info
+        run: |
+          hostname -f
+
+      - name: Disable specific apparmor profiles
+        run: |
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+
+      - name: Install test dependencies.
+        run: |
+          sudo rm -f /usr/bin/yq
+          python3 -m venv ~/.venv
+          source ~/.venv/bin/activate
+          pip3 install pip wheel setuptools --upgrade
+          pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" yamllint jmespath yq e2j2 jinja2-ansible-filters
+          pip3 list
+
+      - name: Retrieve & install wrapper scripts
+        run: |
+          set -e
+          sudo apt install curl
+          curl -s -o /tmp/install.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/install.sh
+          bash /tmp/install.sh
+
+      - name: Install required galaxy collections
+        run: |
+          source ~/.venv/bin/activate
+          /usr/local/bin/ansible-collections.sh
+
+      - name: For ansible 2.9, we need to perform some tweaking
+        run: |
+          source ~/.venv/bin/activate
+          ansible=$(pip show ansible 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible_core=$(pip show ansible-core 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible=${ansible:-$ansible_core}
+          echo "Ansible version = $ansible"
+          if [[ $ansible =~ 2.9.* ]]
+          then
+            echo "Patching for Rocky support"
+            site=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+            sed -i "s/'AlmaLinux'\],/'AlmaLinux', 'Rocky'\],/" $site/ansible/module_utils/facts/system/distribution.py
+            echo "Downgrading 'community.general' to '3.8.3'"
+            ansible-galaxy collection install community.general:3.8.3 --force
+          else
+            echo "No need to patch it"
+          fi
+
+      - name: Show component versions
+        run: |
+          source ~/.venv/bin/activate
+          ansible --version
+          ansible-lint --version
+          yamllint --version
+
+      - name: Lint code.
+        run: |
+          set -e
+          source ~/.venv/bin/activate
+          yamllint .
+          ansible-lint.sh
+

@@ -1,0 +1,23 @@
+---
+
+# Windows features to install
+windows_adserver_features:
+  # - Web-Server
+  - AD-domain-services
+
+# AD domain settings
+windows_adserver_domain_settings:
+  dns_domain_name: "{{ windows_adserver_domain }}"
+  safe_mode_password: "{{ windows_adserver_safe_mode_password }}"
+  create_dns_delegation: no
+  database_path: C:\Windows\NTDS
+  domain_mode: WinThreshold
+  domain_netbios_name: ANSIBLE
+  forest_mode: WinThreshold
+  sysvol_path: C:\Windows\SYSVOL
+
+# List of AD users that should exist
+windows_adserver_users: []
+
+# List of AD groups that should exist
+windows_adserver_groups: []

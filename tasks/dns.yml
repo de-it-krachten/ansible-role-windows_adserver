@@ -1,0 +1,26 @@
+---
+
+- name: Create PTR zones
+  ansible.windows.win_shell: |
+    if Get-DnsServerZone {
+    Add-DnsServerPrimaryZone -NetworkID "{{ item.networkid }}" -ReplicationScope "{{ item.scope | default('Domain') }}";
+  register: __ptr_zone
+  changed_when: __ptr_zone.rc == 0
+  failed_when: false
+  loop: "{{ windows_dnsserver_reverse_zones }}"
+
+- name: Create A records
+  community.windows.win_dns_record:
+    name: "{{ item.name }}"
+    type: "A"
+    value: "{{ item.ip }}"
+    zone: "{{ item.zone | default(windows_dnsserver_domain) }}"
+  loop: "{{ windows_dnsserver_records }}"
+
+- name: Create matching PTR record
+  community.windows.win_dns_record:
+    name: "{{ item.ip.split('.')[3] }}"
+    type: "PTR"
+    value: "{{ item.name }}.{{ item.zone }}"
+    zone: "{{ item.ptr_zone }}"
+  loop: "{{ windows_dnsserver_records }}"
