@@ -1,0 +1,172 @@
+---
+
+# Generic
+generic:
+  role: ansible-role-windows_storage
+  role_short: windows_adserver
+  role_description: |
+    Installs Windows AD server.
+    Purpose ofg this role is to build an AD server to be used for Linux client testing.
+  collections: []
+
+# Dependecies
+dependencies:
+  collections:
+    - ansible.windows
+    - microsoft.ad
+  roles: []
+
+# Supported platforms
+platforms:
+  rhel7:
+    ci: false
+    supported: false
+  rhel8:
+    ci: false
+    supported: false
+  rhel9:
+    ci: false
+    supported: false
+  centos7:
+    ci: false
+    supported: false
+  centos8:
+    ci: false
+    supported: false
+  centos8s:
+    ci: false
+    supported: false
+  centos9s:
+    ci: false
+    supported: false
+  rockylinux8:
+    ci: false
+    supported: false
+  rockylinux9:
+    ci: false
+    supported: false
+  oraclelinux8:
+    ci: false
+    supported: false
+  oraclelinux9:
+    ci: false
+    supported: false
+  almalinux8:
+    ci: false
+    supported: false
+  almalinux9:
+    ci: false
+    supported: false
+  opensuse15:
+    ci: false
+    supported: false
+  sles15:
+    ci: false
+    supported: false
+  debian10:
+    ci: false
+    supported: false
+  debian11:
+    ci: false
+    supported: false
+  debian12:
+    ci: false
+    supported: false
+  ubuntu1804:
+    ci: false
+    supported: false
+  ubuntu2004:
+    ci: false
+    supported: false
+  ubuntu2204:
+    ci: false
+    supported: false
+  fedora37:
+    ci: false
+    supported: false
+  fedora38:
+    ci: false
+    supported: false
+  alpine3:
+    ci: false
+    supported: false
+  win2012r2:
+    ci: false
+    supported: true
+  win2016:
+    ci: false
+    supported: true
+  win2019:
+    ci: false
+    supported: true
+  win2022:
+    ci: false
+    supported: true
+
+# Molecule
+molecule:
+  driver: vagrant
+  provider: virtualbox
+  requirements:
+    roles_extra:
+      - deitkrachten.windows_features
+  converge:
+    vars:
+      windows_adserver_domain: example.com
+      windows_adserver_safe_mode_password: "Passw0rd!"
+      windows_adserver_groups:
+        - name: group1
+          attributes:
+            set:
+              gidNumber: 5000
+        - name: group2
+          attributes:
+            set:
+              gidNumber: 5001
+        - name: group3
+          attributes:
+            set:
+              gidNumber: 5002
+        - name: group4
+          attributes:
+            set:
+              gidNumber: 5003
+      windows_adserver_users:
+        - name: user1
+          password: password123!
+          groups:
+            add:
+              - group1
+          attributes:
+            set:
+              uidNumber: 5000
+              gidNumber: 5000
+        - name: user2
+          password: password123!
+          groups:
+            add:
+              - group2
+          attributes:
+            set:
+              uidNumber: 5001
+              gidNumber: 5001
+        - name: user3
+          password: password123!
+          groups:
+            add:
+              - group1
+              - group2
+          attributes:
+            set:
+              uidNumber: 5002
+              gidNumber: 5002
+        - name: user4
+          password: password123!
+          attributes:
+            set:
+              uidNumber: 5003
+              gidNumber: 5003
+
+# Github
+github:
+  molecule: false
