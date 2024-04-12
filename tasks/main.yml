@@ -1,0 +1,102 @@
+---
+
+- name: Assertions
+  ansible.builtin.assert:
+    that:
+      - windows_adserver_domain is defined
+      - windows_adserver_safe_mode_password is defined
+
+- name: Install Windows features  # noqa var-naming[no-role-prefix]
+  ansible.builtin.include_role:
+    name: deitkrachten.windows_features
+  vars:
+    windows_features:
+      name: "{{ windows_adserver_features }}"
+      include_management_tools: true
+      include_sub_features: true
+
+- name: Create windows domain
+  microsoft.ad.domain:
+    dns_domain_name: "{{ windows_adserver_domain }}"
+    safe_mode_password: "{{ windows_adserver_safe_mode_password }}"
+    create_dns_delegation: "{{ windows_adserver_domain_settings['create_dns_delegation'] | default(omit) }}"
+    database_path: "{{ windows_adserver_domain_settings['database_path'] | default(omit) }}"
+    domain_mode: "{{ windows_adserver_domain_settings['domain_mode'] | default(omit) }}"
+    domain_netbios_name: "{{ windows_adserver_domain_settings['domain_netbios_name'] | default(omit) }}"
+    forest_mode: "{{ windows_adserver_domain_settings['forest_mode'] | default(omit) }}"
+    sysvol_path: "{{ windows_adserver_domain_settings['sysvol_path'] | default(omit) }}"
+  register: _win_domain
+
+- name: Reboot  # noqa no-handler
+  ansible.windows.win_reboot:
+  when: _win_domain.reboot_required
+
+- name: Search for the certificate
+  ansible.windows.win_stat:
+    path: c:\windows\temp\cert.cer
+  register: _cert
+
+- name: Activate LDAPS
+  when: not _cert.stat.exists|bool
+  block:
+
+    - name: Activate LDAPS for AD
+      ansible.windows.win_shell: |
+        # Get some domain details
+        $domain_name = "{{ windows_adserver_domain }}";
+        $dns_name = $env:computername + '.' + $domain_name;
+
+        # Create self-signed certificate
+        $mycert=New-SelfSignedCertificate -DnsName $dns_name -CertStoreLocation cert:/LocalMachine/My;
+        Export-Certificate -Cert $mycert -FilePath c:\windows\temp\cert.cer;
+
+        # Enable LDAPS
+        $thumbprint=($mycert.Thumbprint | Out-String).Trim();
+        $certStoreLoc='HKLM:/Software/Microsoft/Cryptography/Services/NTDS/SystemCertificates/My/Certificates';
+        if (!(Test-Path $certStoreLoc)){ New-Item $certStoreLoc -Force; };
+        Copy-Item -Path HKLM:/Software/Microsoft/SystemCertificates/My/Certificates/$thumbprint -Destination $certStoreLoc;
+
+    - name: Reboot
+      ansible.windows.win_reboot:
+
+    - name: Wait for 60 seconds
+      ansible.builtin.pause:
+        seconds: 60
+
+- name: Retrieve self-signed certificate
+  ansible.builtin.fetch:
+    src: c:\windows\temp\cert.cer
+    dest: "/tmp/{{ windows_adserver_domain }}.cer"
+    flat: yes
+
+- name: Convert certificate into PEM
+  ansible.builtin.command:
+    cmd: openssl x509 -inform der -in /tmp/{{ windows_adserver_domain }}.cer -out /tmp/{{ windows_adserver_domain }}.pem
+  changed_when: false
+  delegate_to: localhost
+
+- name: Create AD groups
+  microsoft.ad.group:
+    name: "{{ item.name }}"
+    state: present
+    scope: global
+    path: "{{ item.path | default(omit) }}"
+    attributes: "{{ item.attributes | default(omit) }}"
+  loop: "{{ windows_adserver_groups }}"
+
+- name: Create AD users
+  microsoft.ad.user:
+    name: "{{ item.name }}"
+    state: present
+    groups: "{{ item.groups | default(omit) }}"
+    password: "{{ item.password }}"
+    update_password: on_create
+    attributes: "{{ item.attributes | default(omit) }}"
+  loop: "{{ windows_adserver_users }}"
+
+- name: Show certificate locations
+  ansible.builtin.debug:
+    msg:
+      - "Certificate can be found here on Ansible control node"
+      - "Certificate (CER): /tmp/{{ windows_adserver_domain }}.cer"
+      - "Certificate (PEM): /tmp/{{ windows_adserver_domain }}.pem"
