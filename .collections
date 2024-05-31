@@ -1,5 +1,5 @@
 ---
 collections:
-  - ansible.windows
-  - community.general
-  - microsoft.ad
+  - name: ansible.windows
+  - name: community.windows
+  - name: microsoft.ad
