@@ -5,7 +5,7 @@
   become: "yes"
   vars:
     windows_adserver_domain: example.com
-    windows_adserver_safe_mode_password: Passw0rd!
+    windows_adserver_safe_mode_password: "Passw0rd!"
     windows_adserver_groups: [{'name': 'group1', 'attributes': {'set': {'gidNumber': 5000}}}, {'name': 'group2', 'attributes': {'set': {'gidNumber': 5001}}}, {'name': 'group3', 'attributes': {'set': {'gidNumber': 5002}}}, {'name': 'group4', 'attributes': {'set': {'gidNumber': 5003}}}]
     windows_adserver_users: [{'name': 'user1', 'password': 'password123!', 'groups': {'add': ['group1']}, 'attributes': {'set': {'uidNumber': 5000, 'gidNumber': 5000}}}, {'name': 'user2', 'password': 'password123!', 'groups': {'add': ['group2']}, 'attributes': {'set': {'uidNumber': 5001, 'gidNumber': 5001}}}, {'name': 'user3', 'password': 'password123!', 'groups': {'add': ['group1', 'group2']}, 'attributes': {'set': {'uidNumber': 5002, 'gidNumber': 5002}}}, {'name': 'user4', 'password': 'password123!', 'attributes': {'set': {'uidNumber': 5003, 'gidNumber': 5003}}}]
   tasks:
