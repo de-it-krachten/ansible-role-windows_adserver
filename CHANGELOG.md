@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/de-it-krachten/ansible-role-windows_adserver/compare/v1.0.0...v1.1.0) (2024-12-29)
+
+
+### Features
+
+* Update supported platforms & CI ([7a46c70](https://github.com/de-it-krachten/ansible-role-windows_adserver/commit/7a46c70c486ab4ec3da1e963519e26adc7b68bca))
+
 # 1.0.0 (2024-06-01)
 
 
