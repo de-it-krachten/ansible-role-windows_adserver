@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/de-it-krachten/ansible-role-windows_adserver/compare/v1.1.0...v1.2.0) (2025-08-09)
+
+
+### Features
+
+* Add support for Windows Server 2025 ([5a52b77](https://github.com/de-it-krachten/ansible-role-windows_adserver/commit/5a52b77415b9f7edc77ba333e441abf20dccd3b8))
+
 # [1.1.0](https://github.com/de-it-krachten/ansible-role-windows_adserver/compare/v1.0.0...v1.1.0) (2024-12-29)
 
 
