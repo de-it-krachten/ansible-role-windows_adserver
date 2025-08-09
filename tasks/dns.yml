@@ -10,7 +10,7 @@
   loop: "{{ windows_dnsserver_reverse_zones }}"
 
 - name: Create A records
-  community.windows.win_dns_record:
+  ansible.windows.win_dns_record:
     name: "{{ item.name }}"
     type: "A"
     value: "{{ item.ip }}"
@@ -18,7 +18,7 @@
   loop: "{{ windows_dnsserver_records }}"
 
 - name: Create matching PTR record
-  community.windows.win_dns_record:
+  ansible.windows.win_dns_record:
     name: "{{ item.ip.split('.')[3] }}"
     type: "PTR"
     value: "{{ item.name }}.{{ item.zone }}"
