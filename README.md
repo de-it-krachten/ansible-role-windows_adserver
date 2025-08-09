@@ -17,7 +17,6 @@ None
 - ansible.windows
 - microsoft.ad
 - ansible.windows
-- community.windows
 - microsoft.ad
 
 ## Platforms
