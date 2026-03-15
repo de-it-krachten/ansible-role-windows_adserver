@@ -9,123 +9,87 @@ generic:
     Purpose ofg this role is to build an AD server to be used for Linux client testing.
   collections: []
 
+# Supported platforms
+platforms:
+  rhel8:
+    supported: false
+    ci: false
+  rhel9:
+    supported: false
+    ci: false
+  rhel10:
+    supported: false
+    ci: false
+  rockylinux8:
+    supported: false
+    ci: false
+  rockylinux9:
+    supported: false
+    ci: false
+  rockylinux10:
+    supported: false
+    ci: false
+  oraclelinux8:
+    supported: false
+    ci: false
+  oraclelinux9:
+    supported: false
+    ci: false
+  oraclelinux10:
+    supported: false
+    ci: false
+  almalinux8:
+    supported: false
+    ci: false
+  almalinux9:
+    supported: false
+    ci: false
+  almalinux10:
+    supported: false
+    ci: false
+  debian11:
+    supported: false
+    ci: false
+  debian12:
+    supported: false
+    ci: false
+  debian13:
+    supported: false
+    ci: false
+  ubuntu2204:
+    supported: false
+    ci: false
+  ubuntu2404:
+    supported: false
+    ci: false
+  fedora42:
+    supported: false
+    ci: false
+  fedora43:
+    supported: false
+    ci: false
+  win2012r2:
+    supported: true
+    ci: false
+  win2016:
+    supported: true
+    ci: false
+  win2019:
+    supported: true
+    ci: false
+  win2022:
+    supported: true
+    ci: false
+  win2025:
+    supported: true
+    ci: false
+
 # Dependecies
 dependencies:
   collections:
     - ansible.windows
     - microsoft.ad
   roles: []
-
-# Supported platforms
-platforms:
-  rhel7:
-    ci: false
-    supported: false
-  rhel8:
-    ci: false
-    supported: false
-  rhel9:
-    ci: false
-    supported: false
-  rhel10:
-    ci: false
-    supported: false
-  centos7:
-    ci: false
-    supported: false
-  centos8:
-    ci: false
-    supported: false
-  centos8s:
-    ci: false
-    supported: false
-  centos9s:
-    ci: false
-    supported: false
-  centos10s:
-    ci: false
-    supported: false
-  rockylinux8:
-    ci: false
-    supported: false
-  rockylinux9:
-    ci: false
-    supported: false
-  rockylinux10:
-    ci: false
-    supported: false
-  oraclelinux8:
-    ci: false
-    supported: false
-  oraclelinux9:
-    ci: false
-    supported: false
-  oraclelinux10:
-    ci: false
-    supported: false
-  almalinux8:
-    ci: false
-    supported: false
-  almalinux9:
-    ci: false
-    supported: false
-  almalinux10:
-    ci: false
-    supported: false
-  opensuse15:
-    ci: false
-    supported: false
-  sles15:
-    ci: false
-    supported: false
-  debian10:
-    ci: false
-    supported: false
-  debian11:
-    ci: false
-    supported: false
-  debian12:
-    ci: false
-    supported: false
-  debian13:
-    ci: false
-    supported: false
-  ubuntu1804:
-    ci: false
-    supported: false
-  ubuntu2004:
-    ci: false
-    supported: false
-  ubuntu2204:
-    ci: false
-    supported: false
-  ubuntu2404:
-    ci: false
-    supported: false
-  fedora41:
-    ci: false
-    supported: false
-  fedora42:
-    ci: false
-    supported: false
-  alpine3:
-    ci: false
-    supported: false
-  win2012r2:
-    ci: false
-    supported: true
-  win2016:    
-    ci: false
-    supported: true
-  win2019:
-    ci: false
-    supported: true
-  win2022:
-    ci: false
-    supported: true
-  win2025:
-    ci: false
-    supported: true
 
 # Molecule
 molecule:

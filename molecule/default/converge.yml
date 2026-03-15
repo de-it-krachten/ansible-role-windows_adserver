@@ -4,6 +4,7 @@
   hosts: all
   become: "yes"
   vars:
+    molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
     windows_adserver_domain: example.com
     windows_adserver_safe_mode_password: "Passw0rd!"
     windows_adserver_groups: [{'name': 'group1', 'attributes': {'set': {'gidNumber': 5000}}}, {'name': 'group2', 'attributes': {'set': {'gidNumber': 5001}}}, {'name': 'group3', 'attributes': {'set': {'gidNumber': 5002}}}, {'name': 'group4', 'attributes': {'set': {'gidNumber': 5003}}}]

@@ -1,4 +1,4 @@
-[![CI](https://github.com/de-it-krachten/ansible-role-windows_adserver/workflows/CI/badge.svg?event=push)](https://github.com/de-it-krachten/ansible-role-windows_adserver/actions?query=workflow%3ACI)
+[![CI](https://github.com/de-it-krachten/ansible-role-windows_storage/workflows/CI/badge.svg?event=push)](https://github.com/de-it-krachten/ansible-role-windows_storage/actions?query=workflow%3ACI)
 
 
 # ansible-role-windows_storage
@@ -16,8 +16,6 @@ None
 #### Collections
 - ansible.windows
 - microsoft.ad
-- ansible.windows
-- microsoft.ad
 
 ## Platforms
 
@@ -31,6 +29,7 @@ Supported platforms
 
 Note:
 <sup>1</sup> : no automated testing is performed on these platforms
+
 
 ## Role Variables
 ### defaults/main.yml
@@ -68,6 +67,7 @@ windows_adserver_groups: []
   hosts: all
   become: 'yes'
   vars:
+    molecule_driver: '{{ lookup(''env'', ''MOLECULE_DRIVER_NAME'') }}'
     windows_adserver_domain: example.com
     windows_adserver_safe_mode_password: Passw0rd!
     windows_adserver_groups:
