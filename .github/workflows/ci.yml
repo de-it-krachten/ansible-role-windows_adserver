@@ -201,4 +201,3 @@ jobs:
           source /usr/local/venv/$ansible/bin/activate
           yamllint .
           /usr/local/bin/ansible-lint.sh -f readable
-
